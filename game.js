@@ -61,55 +61,82 @@ function areCircleColliding(x1, y1, r1, x2, y2, r2){
     let dist = Math.sqrt( (x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) );
     return dist <= r1+r2;
 }
-
-var player = new Tank(400, 300, '#00ff00'); 
+var player = []
+for(let t=0;t<2;++t)
+{
+    player[0] = new Tank(400, 300, '#00ff00'); 
+    player[1] = new Tank(200, 400, '#1400ff'); 
+}
 
 var enemy = [];
-for (let i=0; i<3; ++i){
+for (let i=0; i<4; ++i){
     enemy[i] = new Tank(Math.random()*800, Math.random()*600, 'yellow');
 }
 
 var bullet = [];
 
 function update() {
-    if (player.health > 0){
-        if (isKeyPressed[87])
-        {
-            player.y -= 5;
+    for(let t=0;t<2;++t)
+    {
+        if (player[t].health > 0){
+                if (isKeyPressed[87])
+                {
+                    player[0].y -= 3;
+                }
+                if (isKeyPressed[83])
+                {
+                    player[0].y += 3;
+                }
+                if (isKeyPressed[65])
+                {
+                    player[0].x -= 3;
+                }
+                if (isKeyPressed[68])
+                {
+                    player[0].x += 3;
+                }
+            
+                if (isKeyPressed[38])
+                {
+                    player[1].y -= 3;
+                }
+                if (isKeyPressed[40])
+                {
+                    player[1].y += 3;
+                }
+                if (isKeyPressed[37])
+                {
+                    player[1].x -= 3;
+                }
+                if (isKeyPressed[39])
+                {
+                    player[1].x += 3;
+                }
+            }
+            player[t].isShot();
+            player[t].shoot(mouseX, mouseY);
         }
-        if (isKeyPressed[83])
-        {
-            player.y += 5;
-        }
-        if (isKeyPressed[65])
-        {
-            player.x -= 5;
-        }
-        if (isKeyPressed[68])
-        {
-            player.x += 5;
-        }
-    }
-    console.log(player.health)
-    player.isShot();
     for (let i=0; i<enemy.length; ++i){
-        if (enemy[i].health > 0){
-            enemy[i].isShot();
-            enemy[i].shoot(player.x, player.y);
+            if (enemy[i].health > 0){
+                enemy[i].isShot();
+                if(player[0].health > 0)
+                {
+                    enemy[i].shoot(player[0].x, player[0].y);
+                }else{
+                    enemy[i].shoot(player[1].x, player[1].y);
+                }
+            }
         }
-    }
-    
-    for (let i=0; i<bullet.length; ++i){
-        bullet[i].update();
-        if (bullet[i].x > 800 || bullet[i].x < 0 || bullet[i].y > 600 || bullet[i].y < 0){
-            bullet[i] = bullet[bullet.length-1];
-            bullet.pop();
-            i--;
-        }
-    }
-    player.shoot(mouseX, mouseY);
-}
 
+        for (let i=0; i<bullet.length; ++i){
+            bullet[i].update();
+            if (bullet[i].x > 800 || bullet[i].x < 0 || bullet[i].y > 600 || bullet[i].y < 0){
+                bullet[i] = bullet[bullet.length-1];
+                bullet.pop();
+                i--;
+            }
+        }
+}
 function draw() {
     for (let i=0; i<enemy.length; ++i){
         enemy[i].draw();
@@ -117,7 +144,10 @@ function draw() {
     for (let i=0; i<bullet.length; ++i){
         bullet[i].draw();
     }
-    player.draw();
+    for(let t=0;t<2;++t)
+    {
+        player[t].draw();
+    }
 };
 
 function keyup(key) {
